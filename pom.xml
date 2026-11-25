@@ -1,0 +1,90 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.papeleria</groupId>
+    <artifactId>papeleria-api</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>Papeleria Sol API</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <jakartaee>11.0.0</jakartaee>
+    </properties>
+
+
+<dependencies>
+
+    <!-- Jakarta EE 11 -->
+    <dependency>
+        <groupId>jakarta.platform</groupId>
+        <artifactId>jakarta.jakartaee-api</artifactId>
+        <version>${jakartaee}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- Controlador JDBC de PostgreSQL -->
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.7.14</version>
+    </dependency>
+
+    <!-- Pool compartido; versión utilizada en el material de clase. -->
+    <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>6.2.1</version>
+    </dependency>
+    <!-- Integra los mensajes de Hikari con java.util.logging de GlassFish. -->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>2.0.16</version>
+    </dependency>
+
+    <!-- Fija la API para evitar que Hikari seleccione SLF4J 1.7 transitivamente. -->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>2.0.16</version>
+    </dependency>
+
+</dependencies>
+
+
+    <build>
+        <finalName>papeleria-api</finalName>
+        <sourceDirectory>${project.basedir}</sourceDirectory>
+        <directory>${project.basedir}/extra/target</directory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.12.1</version>
+                <configuration>
+                 <release>17</release>
+                 <includes>
+                     <include>servlets/**/*.java</include>
+                     <include>dao/**/*.java</include>
+                     <include>modelos/**/*.java</include>
+                     <include>extra/config/**/*.java</include>
+                     <include>extra/seguridad/**/*.java</include>
+                     <include>extra/db/**/*.java</include>
+                     <include>extra/http/**/*.java</include>
+                     <include>extra/servicio/**/*.java</include>
+                     <include>extra/validacion/**/*.java</include>
+                 </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <warSourceDirectory>${project.basedir}/extra/webapp</warSourceDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

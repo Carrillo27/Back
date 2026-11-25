@@ -1,0 +1,1 @@
+C:/Program Files/PostgreSQL/18/bin/postgres.exe "-D" "C:/Users/alex/Desktop/Prueba 2/Proyecto-Papeleria-Sol-2.0/backend/extra/target/prueba-pool-de1382bf2ede4ed9aebdb443ee408477/datos" "-h" "127.0.0.1" "-p" "32889"
