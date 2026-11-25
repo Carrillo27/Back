@@ -5,6 +5,12 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
 
 /** Un único pool por despliegue, compartido por todos los DAO. */
 public final class ConexionBD {
@@ -22,12 +28,31 @@ public final class ConexionBD {
         return Integer.parseInt(configuracion(nombre, Integer.toString(predeterminado)));
     }
 
+    /** La contraseña se configura fuera del repositorio y del WAR.
+     * En Render usar PAPELERIA_DB_PASSWORD. En esta laptop se admite el archivo privado.
+     */
+    private static String passwordConfigurada() throws SQLException {
+        String valor = System.getenv("PAPELERIA_DB_PASSWORD");
+        if (valor != null && !valor.isBlank()) return valor;
+        String archivo = System.getenv("PAPELERIA_CONFIG_FILE");
+        Path ruta = archivo == null || archivo.isBlank()
+                ? Path.of(System.getProperty("user.home"), ".papeleria", "bank-render.properties")
+                : Path.of(archivo);
+        if (!Files.exists(ruta)) return null;
+        Properties propiedades = new Properties();
+        try (Reader reader = Files.newBufferedReader(ruta, StandardCharsets.UTF_8)) {
+            propiedades.load(reader);
+            return propiedades.getProperty("password");
+        } catch (IOException ex) {
+            throw new SQLException("No se pudo leer la configuración privada de Bank.", "08001", ex);
+        }
+    }
     private static synchronized HikariDataSource pool() throws SQLException {
         if (cerrado) throw new SQLException("El pool de conexiones está cerrado.", "08003");
         if (dataSource != null) return dataSource;
-        String password = System.getenv("PAPELERIA_DB_PASSWORD");
+        String password = passwordConfigurada();
         if (password == null || password.isBlank()) {
-            throw new SQLException("La variable PAPELERIA_DB_PASSWORD no está configurada en GlassFish.", "08001");
+            throw new SQLException("Configura PAPELERIA_DB_PASSWORD o password en el archivo privado bank-render.properties.", "08001");
         }
         try {
             int maximo = entero("PAPELERIA_POOL_MAX", 10);
@@ -37,8 +62,8 @@ public final class ConexionBD {
             }
             HikariConfig config = new HikariConfig();
             config.setPoolName("PapeleriaPool");
-            config.setJdbcUrl(configuracion("PAPELERIA_DB_URL", "jdbc:postgresql://localhost:5432/Pepeleria_Sol"));
-            config.setUsername(configuracion("PAPELERIA_DB_USER", "postgres"));
+            config.setJdbcUrl(configuracion("PAPELERIA_DB_URL", "jdbc:postgresql://dpg-dc3hd93m8hqs739567pg-a.oregon-postgres.render.com:5432/papeleria_sol_2?sslmode=require"));
+            config.setUsername(configuracion("PAPELERIA_DB_USER", "papoi"));
             config.setPassword(password);
             config.setDriverClassName("org.postgresql.Driver");
             config.setMaximumPoolSize(maximo);
