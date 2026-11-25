@@ -61,4 +61,15 @@ public class TiposMovimientoServlet extends JsonServlet {
             manejarError(response, ex);
         }
     }
+
+    /** PUSH reservado: este módulo no define eventos ni sincronización adicionales. */
+    @Override
+    protected void doPush(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            prepararPeticion(request, response);
+            metodoNoPermitido(response, "PUSH");
+        } catch (Exception ex) {
+            manejarError(response, ex);
+        }
+    }
 }

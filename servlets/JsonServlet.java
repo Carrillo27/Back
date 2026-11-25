@@ -9,6 +9,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +22,16 @@ import java.util.logging.Logger;
 /** Base común para Servlets JSON: validación de escritura, serialización y errores. */
 public abstract class JsonServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(JsonServlet.class.getName());
+    /** Distribuye el verbo personalizado; los verbos estándar conservan su despacho original. */
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if ("PUSH".equals(request.getMethod())) {
+            doPush(request, response);
+        } else {
+            super.service(request, response);
+        }
+    }
 
     protected JsonObject leerObjeto(HttpServletRequest request) throws IOException {
         String tipo = request.getContentType();
@@ -172,6 +183,16 @@ public abstract class JsonServlet extends HttpServlet {
         try {
             prepararPeticion(request, response);
             metodoNoPermitido(response, "PUT");
+        } catch (Exception ex) {
+            manejarError(response, ex);
+        }
+    }
+
+    /** PUSH reservado: este módulo no define eventos ni sincronización adicionales. */
+    protected void doPush(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            prepararPeticion(request, response);
+            metodoNoPermitido(response, "PUSH");
         } catch (Exception ex) {
             manejarError(response, ex);
         }
