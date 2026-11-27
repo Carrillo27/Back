@@ -11,10 +11,8 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-/** Cifrado AES-128/ECB/PKCS5Padding solicitado para la práctica.
- * Base64 solo representa los bytes. ECB no autentica el contenido y revela bloques repetidos.
- * La clave se conserva fuera del código y nunca se genera al reiniciar la aplicación.
- */
+
+ 
 public final class CifradoDatos {
     private static final String VERSION = "ecb1:";
     private final SecretKey clave;

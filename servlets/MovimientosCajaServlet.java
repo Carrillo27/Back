@@ -62,7 +62,6 @@ public class MovimientosCajaServlet extends JsonServlet {
         }
     }
 
-    /** PUSH reservado: este módulo no define eventos ni sincronización adicionales. */
     @Override
     protected void doPush(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {

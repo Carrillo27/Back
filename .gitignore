@@ -1,0 +1,14 @@
+# Archivos generados por Maven
+target/
+*.class
+*.war
+
+# Credenciales privadas
+.env
+.env.*
+clave-aes.txt
+bank-render.properties
+
+# Archivos de configuracion local
+*.log
+CLAUDE.md
